@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class Deck : MonoBehaviour
 {
@@ -11,6 +14,8 @@ public class Deck : MonoBehaviour
     public Button playAgainButton;
     public Text finalMessage;
     public Text probMessage;
+    private int tipoCarta = 4;
+    private int nCartasTipo = 13;
 
     public int[] values = new int[52];
     int cardIndex = 0;    
@@ -34,12 +39,12 @@ public class Deck : MonoBehaviour
          * En principio, la posición de cada valor se deberá corresponder con la posición de faces. 
          * Por ejemplo, si en faces[1] hay un 2 de corazones, en values[1] debería haber un 2.
          */
-        int tipoCarta = 4;
-        int nCartasTipo = 13;
         
-        for (int i = 0; i <= tipoCarta; i++)
+        
+        for (int i = 0; i < tipoCarta; i++)
         {
-            for (int j = nCartasTipo; j > 0; j--)
+            
+            for (int j = nCartasTipo; j >=1; j--)
             {
                 if (j>=10)
                 {
@@ -52,7 +57,7 @@ public class Deck : MonoBehaviour
                 
             }
         }
-        
+        ComprobarCartas();
     }
 
     private void ShuffleCards()
@@ -61,7 +66,21 @@ public class Deck : MonoBehaviour
          * Barajar las cartas aleatoriamente.
          * El método Random.Range(0,n), devuelve un valor entre 0 y n-1
          * Si lo necesitas, puedes definir nuevos arrays.
-         */       
+         */
+
+        
+        
+        
+        for (int i =0; i < values.Length;i++)
+        {
+            int posFutura = Random.Range(0,52);
+            int auxValue = values[posFutura];
+            
+            values[posFutura] = values[i];
+            values[i] = auxValue;
+        }
+        
+        ComprobarCartas();
     }
 
     void StartGame()
@@ -144,6 +163,18 @@ public class Deck : MonoBehaviour
         cardIndex = 0;
         ShuffleCards();
         StartGame();
+    }
+
+    public void ComprobarCartas()
+    {
+        for (int i = 1; i <= tipoCarta; i++)
+        {
+            Debug.Log("TIPO CARTA: "+i);
+            for (int j = nCartasTipo; j >=1; j--)
+            {
+                Debug.Log("TIPO: "+i+" VALOR CARTA: "+values[j]);
+            }
+        }
     }
     
 }
