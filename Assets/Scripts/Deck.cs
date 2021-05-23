@@ -94,15 +94,35 @@ public class Deck : MonoBehaviour
 
     void StartGame()
     {
+        int playerPoints = 0;
+        int dealerPoints = 0;
+        bool blackJack = false;
+        
         for (int i = 0; i < 2; i++)
         {
             PushPlayer();
             PushDealer();
-            
-            /*TODO:
-             * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
-             */
         }
+        
+        /*TODO:
+        * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
+        */
+        
+        playerPoints = player.GetComponent<CardHand>().getPoints();
+        dealerPoints = dealer.GetComponent<CardHand>().getPoints();
+
+        blackJack = comprobarBlackJack(playerPoints, dealerPoints);
+        
+        if (!blackJack)
+        { 
+            comprobarFinDePartida(playerPoints,dealerPoints);
+        }
+        else
+        {
+            ponerEstadoFinPartida();
+        }
+        
+        //Debug.Log("Putuación del Jugador: "+playerPoints+" - Puntuación del Crupier: "+dealerPoints);
     }
 
     private void CalculateProbabilities()
@@ -173,6 +193,49 @@ public class Deck : MonoBehaviour
         cardIndex = 0;
         ShuffleCards();
         StartGame();
+    }
+
+    public bool comprobarBlackJack(int playerPoints, int dealerPoints)
+    {
+        if (playerPoints == 21 )
+        { 
+            finalMessage.text = "BLACKJACK!! Fin de la partida, ha ganado el Jugador";
+            return true;
+        }else if (dealerPoints == 21)
+        {
+            finalMessage.text = "BLACKJACK!! Fin de la partida, ha ganado el crupier";
+            return true;
+        }else
+        {
+            return false;
+        }
+    }
+
+    public void comprobarFinDePartida(int playerPoints, int dealerPoints)
+    {
+        if (playerPoints == 21)
+        {
+            finalMessage.text = "Fin de la partida, ha ganado el jugador";
+            ponerEstadoFinPartida();
+        }else if (playerPoints > 21)
+        {
+            finalMessage.text = "Fin de la partida, gana el crupier porque la suma de los valores de las cartas del jugador es mayor a 21";
+            ponerEstadoFinPartida();
+        }else if (dealerPoints > 21)
+        {
+            finalMessage.text = "Fin de la partida, gana el jugador porque la suma de los valores de las cartas del crupier es mayor a 21";
+            ponerEstadoFinPartida();
+        }else if (dealerPoints == 21)
+        {
+            finalMessage.text = "Fin de la partida, gana el crupier ";
+            ponerEstadoFinPartida();
+        }
+    }
+
+    public void ponerEstadoFinPartida()
+    {
+        stickButton.interactable = false;
+        hitButton.interactable = false;
     }
 
    /* public void ComprobarCartas()
