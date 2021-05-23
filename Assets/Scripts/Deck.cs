@@ -39,25 +39,28 @@ public class Deck : MonoBehaviour
          * En principio, la posición de cada valor se deberá corresponder con la posición de faces. 
          * Por ejemplo, si en faces[1] hay un 2 de corazones, en values[1] debería haber un 2.
          */
+
+        int pilaTipoCarta = 13;
         
-        
-        for (int i = 0; i < tipoCarta; i++)
+        for (int i = 0; i < 52; i++)
         {
-            
-            for (int j = nCartasTipo; j >=1; j--)
+            if (pilaTipoCarta == 0)
             {
-                if (j>=10)
-                {
-                    values[j] = 10;
-                }
-                else
-                {
-                    values[j] = j;
-                }
-                
+                pilaTipoCarta = 13;
             }
+            
+            if (pilaTipoCarta >= 10)
+            {
+                values[i] = 10;
+            }
+            else
+            {
+                values[i] = pilaTipoCarta;
+            }
+            
+            pilaTipoCarta--;
         }
-        ComprobarCartas();
+        //ComprobarCartas();
     }
 
     private void ShuffleCards()
@@ -68,13 +71,15 @@ public class Deck : MonoBehaviour
          * Si lo necesitas, puedes definir nuevos arrays.
          */
 
-        
+        int posFutura = -1;
+        int auxValue = -1;
+
         
         
         for (int i =0; i < values.Length;i++)
         {
-            int posFutura = Random.Range(0,52);
-            int auxValue = values[posFutura];
+            posFutura = Random.Range(0, 52);
+            auxValue = values[posFutura];
             
             values[posFutura] = values[i];
             values[i] = auxValue;
@@ -169,7 +174,7 @@ public class Deck : MonoBehaviour
     {
         for (int i = 1; i <= tipoCarta; i++)
         {
-            Debug.Log("TIPO CARTA: "+i);
+            //Debug.Log("TIPO CARTA: "+i);
             for (int j = nCartasTipo; j >=1; j--)
             {
                 Debug.Log("TIPO: "+i+" VALOR CARTA: "+values[j]);
