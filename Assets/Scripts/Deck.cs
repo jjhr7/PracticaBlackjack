@@ -22,8 +22,7 @@ public class Deck : MonoBehaviour
        
     private void Awake()
     {    
-        InitCardValues();        
-
+        InitCardValues();
     }
 
     private void Start()
@@ -40,25 +39,26 @@ public class Deck : MonoBehaviour
          * Por ejemplo, si en faces[1] hay un 2 de corazones, en values[1] debería haber un 2.
          */
 
-        int pilaTipoCarta = 13;
-        
+        int pilaTipoCarta = 1;
+
         for (int i = 0; i < 52; i++)
         {
-            if (pilaTipoCarta == 0)
+            if (pilaTipoCarta == 14)
             {
-                pilaTipoCarta = 13;
+                pilaTipoCarta = 1;
             }
             
             if (pilaTipoCarta >= 10)
             {
                 values[i] = 10;
+                
             }
             else
             {
                 values[i] = pilaTipoCarta;
             }
             
-            pilaTipoCarta--;
+            pilaTipoCarta++;
         }
         //ComprobarCartas();
     }
@@ -73,19 +73,23 @@ public class Deck : MonoBehaviour
 
         int posFutura = -1;
         int auxValue = -1;
-
+        Sprite auxFace = null;
         
         
         for (int i =0; i < values.Length;i++)
         {
             posFutura = Random.Range(0, 52);
             auxValue = values[posFutura];
+            auxFace = faces[posFutura];
             
             values[posFutura] = values[i];
+            faces[posFutura] = faces[i];
+            
             values[i] = auxValue;
+            faces[i] = auxFace;
         }
         
-        ComprobarCartas();
+        //ComprobarCartas();
     }
 
     void StartGame()
@@ -94,6 +98,7 @@ public class Deck : MonoBehaviour
         {
             PushPlayer();
             PushDealer();
+            
             /*TODO:
              * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
              */
@@ -170,16 +175,15 @@ public class Deck : MonoBehaviour
         StartGame();
     }
 
-    public void ComprobarCartas()
+   /* public void ComprobarCartas()
     {
         for (int i = 1; i <= tipoCarta; i++)
         {
-            //Debug.Log("TIPO CARTA: "+i);
             for (int j = nCartasTipo; j >=1; j--)
             {
-                Debug.Log("TIPO: "+i+" VALOR CARTA: "+values[j]);
+                Debug.Log("VALOR CARTA: "+values[j]);
             }
         }
-    }
+    }*/
     
 }
