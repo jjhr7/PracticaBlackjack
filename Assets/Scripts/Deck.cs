@@ -14,12 +14,16 @@ public class Deck : MonoBehaviour
     public Button playAgainButton;
     public Text finalMessage;
     public Text probMessage;
+    public Text probMessage2;
+    public Text probMessage3;
+    
     private int tipoCarta = 4;
     private int nCartasTipo = 13;
 
     public int[] values = new int[52];
-    int cardIndex = 0;    
-       
+    int cardIndex = 0;
+
+    public bool cartaOculta;
     private void Awake()
     {    
         InitCardValues();
@@ -55,7 +59,15 @@ public class Deck : MonoBehaviour
             }
             else
             {
-                values[i] = pilaTipoCarta;
+                if (i == 1)
+                {
+                    values[i] = 11;
+                }
+                else
+                {
+                    values[i] = pilaTipoCarta;
+                }
+                
             }
             
             pilaTipoCarta++;
@@ -100,8 +112,8 @@ public class Deck : MonoBehaviour
         
         for (int i = 0; i < 2; i++)
         {
-            PushPlayer();
             PushDealer();
+            PushPlayer();
         }
         
         /*TODO:
@@ -133,6 +145,50 @@ public class Deck : MonoBehaviour
          * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
          * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
          */
+        
+        float probabilities;
+        float PSA;
+        float PSAUB;
+        int casosFavorables;
+        int CFSA;
+        
+        int valorDealerTotal = dealer.GetComponent<CardHand>().getPoints();
+        int valorJugadorTotal = player.GetComponent<CardHand>().getPoints();
+        int valorDealerSecreto = dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().value;
+
+        if (dealer.GetComponent<CardHand>().cards.Count == 2 && player.GetComponent<CardHand>().cards.Count == 2)
+        {
+            cartaOculta = true;
+        }
+        else
+        {
+            cartaOculta = false;
+        }
+        
+        if (cartaOculta)
+        {
+            int valorDealerSinSecreto = valorDealerTotal - valorDealerSecreto;
+            casosFavorables = nCartasTipo - valorJugadorTotal + valorDealerSinSecreto;
+            probabilities = casosFavorables / 13f;
+
+            probabilities = redondeoProb(probabilities);
+
+            probMessage.text = "P crupier más puntos "+Math.Round(probabilities * 100).ToString() + " %";
+            Debug.Log("Probabilidad de que el crupier tenga más puntos "+Math.Round(probabilities * 100).ToString() + " %");
+        }
+        
+        casosFavorables = nCartasTipo - (21 - valorJugadorTotal);
+        probabilities = casosFavorables / 13f;
+        probabilities = redondeoProb(probabilities);
+        probMessage2.text = "P jugador obtenga más de 21 si pide carta "+Math.Round(probabilities * 100).ToString() + " %";
+
+        CFSA = nCartasTipo - (16 - valorJugadorTotal);
+        PSA = CFSA / 13f;
+        PSA = redondeoProb(PSA);
+        PSAUB = PSA - probabilities;
+        PSAUB = redondeoProb(PSAUB);
+        probMessage3.text = "P jugador obtenga entre 17 y 21 si pide carta "+Math.Round(PSAUB*100).ToString() +" %";
+        
     }
 
     void PushDealer()
@@ -191,12 +247,12 @@ public class Deck : MonoBehaviour
          * El dealer se planta al obtener 17 puntos o más
          * Mostramos el mensaje del que ha ganado
          */
-        if (dealer.GetComponent<CardHand>().getPoints() < 16)
+        if (dealer.GetComponent<CardHand>().getPoints() <= 16)
         {
             PushDealer();
         }
 
-        if (dealer.GetComponent<CardHand>().getPoints() > 17)
+        if (dealer.GetComponent<CardHand>().getPoints() >= 17)
         {
             finalMessage.text = "El crupier se planta, el jugador gana";
             PonerEstadoFinPartida();
@@ -221,10 +277,12 @@ public class Deck : MonoBehaviour
         if (playerPoints == 21 )
         { 
             finalMessage.text = "BLACKJACK!! Fin de la partida, ha ganado el Jugador";
+            GirarPrimeraCartaDealer();
             return true;
         }else if (dealerPoints == 21)
         {
             finalMessage.text = "BLACKJACK!! Fin de la partida, ha ganado el crupier";
+            GirarPrimeraCartaDealer();
             return true;
         }else
         {
@@ -262,17 +320,28 @@ public class Deck : MonoBehaviour
     private void GirarPrimeraCartaDealer()
     {
         dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+        
     }
 
-   /* public void ComprobarCartas()
+    public void ComprobarCartas()
     {
         for (int i = 1; i <= tipoCarta; i++)
         {
-            for (int j = nCartasTipo; j >=1; j--)
-            {
-                Debug.Log("VALOR CARTA: "+values[j]);
-            }
+            Debug.Log("VALOR CARTA "+i+": "+values[i]);
         }
-    }*/
+    }
+
+    private float redondeoProb(float prob)
+    {
+        if (prob > 1)
+        {
+            prob = 1;
+        }else if (prob < 0)
+        {
+            prob = 0;
+        }
+
+        return prob;
+    }
     
 }
