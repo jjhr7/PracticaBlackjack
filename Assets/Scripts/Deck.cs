@@ -111,15 +111,15 @@ public class Deck : MonoBehaviour
         playerPoints = player.GetComponent<CardHand>().getPoints();
         dealerPoints = dealer.GetComponent<CardHand>().getPoints();
 
-        blackJack = comprobarBlackJack(playerPoints, dealerPoints);
+        blackJack = ComprobarBlackJack(playerPoints, dealerPoints);
         
         if (!blackJack)
         { 
-            comprobarFinDePartida(playerPoints,dealerPoints);
+            ComprobarFinDePartida(playerPoints,dealerPoints);
         }
         else
         {
-            ponerEstadoFinPartida();
+            PonerEstadoFinPartida();
         }
         
         //Debug.Log("Putuación del Jugador: "+playerPoints+" - Puntuación del Crupier: "+dealerPoints);
@@ -159,13 +159,20 @@ public class Deck : MonoBehaviour
         /*TODO: 
          * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
          */
+        if (dealer.GetComponent<CardHand>().cards.Count == 2)
+        {
+          GirarPrimeraCartaDealer();  
+        }
         
         //Repartimos carta al jugador
+        
         PushPlayer();
-
+        
+        
         /*TODO:
          * Comprobamos si el jugador ya ha perdido y mostramos mensaje
-         */      
+         */     
+        ComprobarFinDePartida(player.GetComponent<CardHand>().getPoints(),dealer.GetComponent<CardHand>().getPoints());
 
     }
 
@@ -174,12 +181,26 @@ public class Deck : MonoBehaviour
         /*TODO: 
          * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
          */
+        if (dealer.GetComponent<CardHand>().cards.Count == 2)
+        {
+            GirarPrimeraCartaDealer();  
+        }
 
         /*TODO:
          * Repartimos cartas al dealer si tiene 16 puntos o menos
          * El dealer se planta al obtener 17 puntos o más
          * Mostramos el mensaje del que ha ganado
-         */                
+         */
+        if (dealer.GetComponent<CardHand>().getPoints() < 16)
+        {
+            PushDealer();
+        }
+
+        if (dealer.GetComponent<CardHand>().getPoints() > 17)
+        {
+            finalMessage.text = "El crupier se planta, el jugador gana";
+            PonerEstadoFinPartida();
+        }
          
     }
 
@@ -195,7 +216,7 @@ public class Deck : MonoBehaviour
         StartGame();
     }
 
-    public bool comprobarBlackJack(int playerPoints, int dealerPoints)
+    private bool ComprobarBlackJack(int playerPoints, int dealerPoints)
     {
         if (playerPoints == 21 )
         { 
@@ -211,31 +232,36 @@ public class Deck : MonoBehaviour
         }
     }
 
-    public void comprobarFinDePartida(int playerPoints, int dealerPoints)
+    private void ComprobarFinDePartida(int playerPoints, int dealerPoints)
     {
         if (playerPoints == 21)
         {
             finalMessage.text = "Fin de la partida, ha ganado el jugador";
-            ponerEstadoFinPartida();
+            PonerEstadoFinPartida();
         }else if (playerPoints > 21)
         {
-            finalMessage.text = "Fin de la partida, gana el crupier porque la suma de los valores de las cartas del jugador es mayor a 21";
-            ponerEstadoFinPartida();
+            finalMessage.text = "Fin de la partida, gana el crupier";
+            PonerEstadoFinPartida();
         }else if (dealerPoints > 21)
         {
-            finalMessage.text = "Fin de la partida, gana el jugador porque la suma de los valores de las cartas del crupier es mayor a 21";
-            ponerEstadoFinPartida();
+            finalMessage.text = "Fin de la partida, gana el jugador";
+            PonerEstadoFinPartida();
         }else if (dealerPoints == 21)
         {
             finalMessage.text = "Fin de la partida, gana el crupier ";
-            ponerEstadoFinPartida();
+                PonerEstadoFinPartida();
         }
     }
 
-    public void ponerEstadoFinPartida()
+    private void PonerEstadoFinPartida()
     {
         stickButton.interactable = false;
         hitButton.interactable = false;
+    }
+
+    private void GirarPrimeraCartaDealer()
+    {
+        dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
     }
 
    /* public void ComprobarCartas()
