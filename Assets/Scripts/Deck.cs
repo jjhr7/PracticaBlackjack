@@ -26,7 +26,7 @@ public class Deck : MonoBehaviour
     private int tipoCarta = 4;
     private int nCartasTipo = 13;
 
-    private bool apostando = false;
+    public bool apostando = false;
     
 
     public int[] values = new int[52];
@@ -285,6 +285,7 @@ public class Deck : MonoBehaviour
         cardIndex = 0;
         ShuffleCards();
         StartGame();
+        ActualizarTextoApuesta(10);
     }
 
     public void SubirApuesta()
@@ -341,19 +342,23 @@ public class Deck : MonoBehaviour
         if (playerPoints == 21)
         {
             finalMessage.text = "Fin de la partida, ha ganado el jugador";
+            ComprobarApuestaGanada();
             PonerEstadoFinPartida();
         }else if (playerPoints > 21)
         {
             finalMessage.text = "Fin de la partida, gana el crupier";
+            ComprobarApuestaPerdida();
             PonerEstadoFinPartida();
         }else if (dealerPoints > 21)
         {
             finalMessage.text = "Fin de la partida, gana el jugador";
+            ComprobarApuestaGanada();
             PonerEstadoFinPartida();
         }else if (dealerPoints == 21)
         {
             finalMessage.text = "Fin de la partida, gana el crupier ";
-                PonerEstadoFinPartida();
+            ComprobarApuestaPerdida();
+            PonerEstadoFinPartida();
         }
     }
 
@@ -400,6 +405,26 @@ public class Deck : MonoBehaviour
     {
         valorApuestaMsg.text = "Valor apuesta actual "+apuestaActualizada+"€";
         Debug.Log("Valor apuesta actual "+valorApuesta);
+    }
+
+    private void ComprobarApuestaGanada()
+    {
+        if (apostando)
+        {
+            banca = banca+(valorApuesta*2);
+            ActualizarTextoBanca(banca);
+            ActualizarTextoApuesta(10);
+        }
+    }
+
+    private void ComprobarApuestaPerdida()
+    {
+        if (apostando)
+        {
+            banca = banca-valorApuesta;
+            ActualizarTextoBanca(banca);
+            ActualizarTextoApuesta(10);
+        }
     }
     
 }
