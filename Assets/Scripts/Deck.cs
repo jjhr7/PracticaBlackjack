@@ -12,18 +12,30 @@ public class Deck : MonoBehaviour
     public Button hitButton;
     public Button stickButton;
     public Button playAgainButton;
+    public Button subirApuestaButton;
+    public Button bajarApuestaButton;
+    public Button apostarButton;
     public Text finalMessage;
     public Text probMessage;
     public Text probMessage2;
     public Text probMessage3;
+    public Text valorApuestaMsg;
+
+    public Text bancaEstado;
     
     private int tipoCarta = 4;
     private int nCartasTipo = 13;
 
+    private bool apostando = false;
+    
+
     public int[] values = new int[52];
     int cardIndex = 0;
 
-    public bool cartaOculta;
+    private int banca = 1000;
+    private int valorApuesta = 10;
+    
+    private bool cartaOculta;
     private void Awake()
     {    
         InitCardValues();
@@ -133,7 +145,10 @@ public class Deck : MonoBehaviour
         {
             PonerEstadoFinPartida();
         }
-        
+
+        ActualizarTextoBanca(banca);
+        ActualizarTextoApuesta(valorApuesta);
+
         //Debug.Log("Putuación del Jugador: "+playerPoints+" - Puntuación del Crupier: "+dealerPoints);
     }
 
@@ -174,7 +189,7 @@ public class Deck : MonoBehaviour
             probabilities = redondeoProb(probabilities);
 
             probMessage.text = "P crupier más puntos "+Math.Round(probabilities * 100).ToString() + " %";
-            Debug.Log("Probabilidad de que el crupier tenga más puntos "+Math.Round(probabilities * 100).ToString() + " %");
+            //Debug.Log("Probabilidad de que el crupier tenga más puntos "+Math.Round(probabilities * 100).ToString() + " %");
         }
         
         casosFavorables = nCartasTipo - (21 - valorJugadorTotal);
@@ -272,6 +287,37 @@ public class Deck : MonoBehaviour
         StartGame();
     }
 
+    public void SubirApuesta()
+    {
+        if (valorApuesta+10 <= banca)
+        {
+            valorApuesta =valorApuesta+10;
+            ActualizarTextoApuesta(valorApuesta);
+        }
+    }
+
+    public void BajarApuesta()
+    {
+        if (valorApuesta-10 >= 0)
+        {
+            valorApuesta =valorApuesta-10;
+            ActualizarTextoApuesta(valorApuesta);
+        }
+    }
+
+    public void ActivarApuesta()
+    {
+        if (apostando)
+        {
+            apostando = false;
+        }
+        else
+        {
+            apostando = true;
+        }
+    }
+    
+
     private bool ComprobarBlackJack(int playerPoints, int dealerPoints)
     {
         if (playerPoints == 21 )
@@ -342,6 +388,18 @@ public class Deck : MonoBehaviour
         }
 
         return prob;
+    }
+
+    private void ActualizarTextoBanca(int bancaEstadoNuevo)
+    {
+        bancaEstado.text = "Banca del jugador: " + bancaEstadoNuevo;
+        Debug.Log("Banca del jugador: "+banca);
+    }
+
+    private void ActualizarTextoApuesta(int apuestaActualizada)
+    {
+        valorApuestaMsg.text = "Valor apuesta actual "+apuestaActualizada+"€";
+        Debug.Log("Valor apuesta actual "+valorApuesta);
     }
     
 }
